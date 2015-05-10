@@ -1,15 +1,23 @@
 import random
+try:
+        import cPickle as pickle
+except:
+        import pickle
 import hashlib
 
 class Genome(object):
-        def __init__(self,separators,vision,memory,actions,heuristics):
+        #TODO create the basic genome
+        #  fill in mutations
+        def __init__(self,separators=None,vision=0,memory=0,actions=None,heuristics=[(0,0)]):
                 self.separators= separators
                 self.vision= vision
                 self.memory= memory
                 self.actions= actions
                 self.heuristics= heuristics
-                self.name = create_name()
+                #potential problem using hash of initial data to create name
+                #self.name = create_name()
                 self.complexity = complexity_estimate()
+                self.fitness =0
 
         def mutate(self,temperature,mate=None):
                 r = random.random()
@@ -29,12 +37,24 @@ class Genome(object):
                 #choose some number of things to add then randomly 
                 #if there is a difference in heuristic sequences
 
+        #TODO Fix the recursive problem by making name only depend on actions, heuristics, and separators...plus vision and mem
         def create_name(self):
-                seps="".join(map(str,separators))
-                acts = map(lambda action:map(str,action))
-                heurs=
-                hash_obj=hashlib.md5(seps+str(vision)+str(memory)+acts+heurs)
+                #seps="".join(map(str,separators))
+                #acts = map(lambda action:map(str,action))
+                #heurs=
+
+                self_string=pickle.dumps(self)
+                hash_obj=hashlib.md5(self_string)
+                name=hash_obj.hexdigest()
 
         def complexity_estimate(self):
                 #TODO
-                #pretty much just multiply vision by memory by number of separators
+                #each action has complexity determined by the amount of info used
+                #sum these, but perhaps weight heuristics differently
+                #longer heuristic sequence implies more complex
+                #longer action table implies more complex
+                #return a number for taxing purposes
+        def fitness_update(self,data):
+                #take the average energy of agents with this genome
+                #average lifespan 
+                #average age

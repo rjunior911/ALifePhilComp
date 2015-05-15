@@ -28,7 +28,6 @@ class Agent(object):
                         
                     #attack with n (later versions)
         #a sequence of heuristic actions to take in the event that action is not determined by knowledge
-
     def __init__(self,name,position,genome=Genome(),energy=0,knowledge=[]):
         #At the moment the behavior class is a needless composition but perhaps later it will leave room for gene expression
         self.behavior = Behavior(genome)
@@ -60,8 +59,8 @@ class Agent(object):
             #self.observe()
     #done
     def observe(self,data):
-        knowledge.prepend(data.insert(vision,self.energy))
-        if len(self.knowledge) > self.memory:
+        self.knowledge=[data.insert(self.behavior.vision,self.energy)]+ self.knowledge 
+        if len(self.knowledge) > self.behavior.memory:
             self.knowledge.pop()
 
     #the world determines the allocation of energy, the resulting positions and the life or death of each agent.

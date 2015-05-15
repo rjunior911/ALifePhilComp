@@ -10,7 +10,7 @@ class Behavior(object):
                 self.heuristics = genome.heuristics
                 #place keeps track of the last heuristic action performed
                 self.place = 0
-                self.h_length = len(heuristics)
+                self.h_length = len(self.heuristics)
                 self.genome = genome
 
         #take some knowledge and return an response tuple based on behavior table
@@ -24,8 +24,11 @@ class Behavior(object):
                         scenario = resp[0]
                         if matches(scenario,knowledge):
                                 return resp[1]
-                response = heuristics[self.place]
-                self.place += 1 % self.hlength
+                #print(self.heuristics)
+                #print(self.place)
+                response = self.heuristics[self.place]
+                self.place += 1 
+                self.place %= self.h_length
                 return response
 
 

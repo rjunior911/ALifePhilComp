@@ -5,35 +5,37 @@ def main(argv=sys.argv):
         #stuff for visualization purposes
         world_file = "world.txt"
         agents_file= "agents.txt"
+        genomes_file= "genomes.txt"
         world_buffer = open(world_file,'w')
         agents_buffer = open(agents_file,'w')
+        genomes_buffer = open(genomes_file,'w')
 
         #planetary conditions
-        world_size = 100
-        end_of_time = 1000
+        world_size = 5
+        end_of_time = 10000
 
         #energy fed into the system at each time step (dispersed randomly)
-        sunshine = 50
+        sunshine = 500
 
         #size of sunlight chunks dispersed
         energy_packet=5
 
         #proportionally increases cost of movement with how much energy one has
-        friction = 0
+        friction = 1
 
         #life restrictions
         initial_biodiversity = 20
-        max_diversity = 100
-        initial_population = 40
-        max_agents= 2000
+        max_diversity = 100#not actually used here
+        initial_population =10 
+        max_agents= 2000#not actually used here
         #individual life restrictions
         initial_temp= 1
-        max_memory = 10
-        max_vision = 10
-        max_separators = 3
+        max_memory = 10 #not actually used here
+        max_vision = 10#not actually used here
+        max_separators = 3#not actually used here
 
         #in units of energy per timestep
-        existence_cost = 1
+        existence_cost = 5
 
         #a tax on complexity of organisms so that random purposeless behavior is not rewarded
         complexity_cost = 1
@@ -44,8 +46,8 @@ def main(argv=sys.argv):
 
         #steps to spawn new life
         reproduction_age = 5
-        reproduction_energy = 50
-        reproduction_likelihood = .3
+        reproduction_energy = 20
+        reproduction_likelihood = .5
 
         mutation_rate = .25
         response_permutation_rate = 0.05
@@ -99,8 +101,8 @@ def main(argv=sys.argv):
                 world.update()
                 if (world.time % 100) == 0:
                         genomes_buffer.write('at time '+ str(world.time)+' the fittest genomes were:\n')
-                        for i in range(10):
-                                genomes_buffer.write(world.fittest[i].name)
+                        for i in range(min(10,len(world.genomes))):
+                                genomes_buffer.write(str(world.fittest[i])+'\n')
                         genomes_buffer.write('\n')
                 world_buffer.write(world.show())
         

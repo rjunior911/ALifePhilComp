@@ -1,6 +1,7 @@
+import pdb
 import functools
 import random
-from numpy import *
+#from numpy import *
 from agents import *
 from genetics import *
 class World(object):
@@ -11,10 +12,10 @@ class World(object):
 
                 #physical constants
                 self.size = physics["world size"]
-                self.state = zeros(self.size) #initialized to zero energy using numpy array
+                self.state = [0 for i in range(self.size)]
                 self.duration = physics["end of time"] #This may be unnecessary
                 self.sunshine=physics["sunshine"]
-                self.packet_size =physics["energy packet"]
+                self.energy_packet =physics["energy packet"]
                 self.friction=physics["friction"]
                 #life condition constants
                 #self.population=life_conditions["initial population"] number of living agents
@@ -30,8 +31,8 @@ class World(object):
                 self.absorption_cost=life_conditions["absorption cost"]
                 self.defense_cost=life_conditions["defense cost"]
                 self.attack_cost=life_conditions["attack cost"]
-                self.packet_size = life_conditions["packet size"]
-                #self.reproduction_age=life_conditions["reproduction age"]
+                self.bio_packet_size = life_conditions["packet size"]
+                self.reproduction_age=life_conditions["reproduction age"]
                 #self.reproduction_likelihood=life_conditions["reproduction likelihood"]
                 #self.mutation_rate=life_conditions["mutation rate"]
                 #self.response_permutation_rate = life_conditions["response permutation rate"]
@@ -50,15 +51,23 @@ class World(object):
                 self.fittest =[]
         #done
         def show(self):
-                return self.state
+                return str(self.state)+ '\t'+" ".join([str(self.fittest[i].complexity) for i in range(min(10,len(self.genomes)))]) +'\n'
         #DONE
-        def sort_genomes(self):
+        def sort_fitness(self):
                 self.genomes=sorted(self.genomes,key=lambda genome:genome.fitness)
+                self.fittest = self.genomes[:10]
+        def sort_complexity(self):
+                self.genomes=sorted(self.genomes,key=lambda genome:genome.complexity)
+                self.most_complex = self.genomes[:10]
+        def extinction(self):
+              for genome in self.genomes:
+                      if genome.living_instantiations == 0:
+                              self.genomes.remove(genome)
         #done
         def update(self):
                 self.time += 1
                 self.shine()
-                state_changes = zeros(self.size)
+                state_changes = [0 for i in range(self.size)]
                 #retrieve responses
                 responses = []
                 for agent in self.agents:
@@ -77,17 +86,23 @@ class World(object):
                         else:
                                 self.kill(agent) 
                 self.repopulate()
+                self.sort_fitness()
+                self.sort_complexity()
+                self.extinction()
                 
 
         #DONE 
         def seed_agents(self):
-                #take each seed genome, a random position, and the initial life energy
                 agents = []
                 for i in range(self.life_conditions["initial population"]):
                         pos = random.randrange(self.size)
                         name = self.create_agent_name()
+                        #agents[i] = Agent(name,pos)
                         a = Agent(name,pos)
                         agents.append(a)
+                        self.genomes.append(a.behavior.genome)
+                        a.behavior.genome.instantiations = 1
+                        a.behavior.genome.living_instantiations = 1
                 return agents
         #DONE 
         def seed_genomes(self):
@@ -107,9 +122,17 @@ class World(object):
                                         agent.energy-=self.reproduction_energy
                                         self.birth(agent.behavior.genome)
                                         r = random.random()
+                lives = len(self.agents)
+                genomes = len(self.genomes)
+                if genomes< self.life_conditions["initial biodiversity"]:
+                        self.genomes += self.seed_genomes()
+                if lives< self.life_conditions["initial population"]:
+                        self.agents += self.seed_agents()
+
         #this is where all of the dynamics is coded (described in physics.txt)
         def calculate_fates(self,responses):
             #active_positions is a dictionary of positions referring to lists of actor-response pairs
+            
             fates = {}
             active_positions = {}
             #responses: (name, pos, energy, action)
@@ -117,7 +140,9 @@ class World(object):
                     if response[1] not in active_positions:
                             active_positions[response[1]]= [(response[0],response[2],response[3])]
                     else:
-                            active_positions[response[1]]= active_positions[response[1]].append((response[0],response[2],response[3]))
+                            #old = active_postions[response[1]]
+                            active_positions[response[1]]= active_positions[response[1]]+[(response[0],response[2],response[3])]
+                            #new = active_postions[response[1]]
             #active_positions: keys are positions values are (name,energy,action)
             for pos, pairs in active_positions.items():
                     background_energy = self.state[pos]
@@ -138,15 +163,15 @@ class World(object):
                             attacks.append((pair[0],pair[2][2]))
                             movements.append((pair[0],pair[2][3]))
 
-                    energy_allocate(energies,background_energy,absorptions)
-                    new_life_energy = defenses(energies,new_energies,life_energy,defenses)
+                    self.energy_allocate(energies,background_energy,absorptions)
+                    new_life_energy = self.defenses(energies,new_energies,life_energy,defenses)
                     en_list =[]
                     for name in energies:
                             en_list.append((name,energies[name]))
                     en_list.sort(key=lambda pair:pair[1])
                     attacks.sort(key=lambda pair:pair[1])
-                    attacks(en_list,new_energies,new_life_energy,attacks)
-                    position_changes = movements(new_energies,movements)
+                    self.attacks(en_list,new_energies,new_life_energy,attacks)
+                    position_changes = self.movements(new_energies,movements)
                     
                     for pair in pairs:
                             name = pair[0]
@@ -161,7 +186,7 @@ class World(object):
         #Done
         def relevant_data(self, agent):
                 pos= agent.position
-                vis = agent.vision
+                vis = agent.behavior.vision
                 right = pos + vis
                 left = pos - vis
                 width = 2*vis
@@ -202,7 +227,7 @@ class World(object):
                         name = request[0]
                         amount = request[1]
                         cost = amount*self.absorption_cost
-                        if cost +amount*packet_size < energies[name]:
+                        if cost +amount*self.bio_packet_size < energies[name]:
                                 absorptions_paid.append((name,amount))
                                 energies[name]-=cost
                 absorptions_paid = sorted(absorptions_paid,key=lambda request:request[1])
@@ -210,8 +235,8 @@ class World(object):
                 for absorption in absorptions_paid:
                         if remaining > 0:
                                 name = absorption[0]
-                                energies[name]+=absorption[1]*packet_size
-                                background_energy-=absorption[1]*packet_size
+                                energies[name]+=absorption[1]*self.bio_packet_size
+                                background_energy-=absorption[1]*self.bio_packet_size
         def defenses(self,energies,new_energies,life_energy,defenses):
                 defenses_paid=[]
                 new_life_energy = life_energy
@@ -219,15 +244,15 @@ class World(object):
                         name = request[0]
                         amount = request[1]
                         cost = amount*self.defense_cost
-                        if cost +amount*packet_size < energies[name]:
+                        if cost +amount*self.bio_packet_size < energies[name]:
                                 defenses_paid.append((name,defense))
                                 energies[name]-=cost
                                 new_life_energy -=cost
                 for defense in defenses_paid:
                         name = defense[0]
-                        new_energies[name]+=defense[1]*packet_size
-                        energies[name]-=defense[1]*packet_size
-                        new_life_energy-=defense[1]*packet_size
+                        new_energies[name]+=defense[1]*self.bio_packet_size
+                        energies[name]-=defense[1]*self.bio_packet_size
+                        new_life_energy-=defense[1]*self.bio_packet_size
                 return new_life_energy
         #energies sorted in increasing order
         #attacks sorted in increasing order
@@ -237,13 +262,13 @@ class World(object):
                         name = request[0]
                         amount = request[1]
                         cost = amount*self.attack_cost
-                        if cost +amount*packet_size < energies[name]:
-                                index = find(name,energies)
+                        index = find(name,energies)
+                        if cost +amount*self.bio_packet_size < energies[index]:
                                 energies[index]=(energies[index][0],energies[index][1]-cost)
-                                amount_to_steal = amount*self.packet_size
+                                amount_to_steal = amount*self.bio_packet_size
                                 has_not_stolen =True
-                                for i in range(energies.len()):
-                                        if amount_to_steal < energies[i][1] & energies[i][0]!=name &  has_not_stolen:
+                                for i in range(len(energies)):
+                                        if amount_to_steal < energies[i][1] & (energies[i][0]!=name) &  has_not_stolen:
                                                new_energies[name]+=amount_to_steal
                                                energies[i]=(energies[i][0],energies[i][1]-amount_to_steal)
                                                has_not_stolen=False
@@ -251,16 +276,15 @@ class World(object):
 
         def movements(self,new_energies,movements):
                 movements_paid=[]
-                new_life_energy = life_energy
                 positions={}
                 for request in movements:
                         name = request[0]
+                        positions[name]=0
                         amount = request[1]
                         cost = abs(amount)*self.friction
-                        if cost +amount*packet_size < energies[name]:
-                                movements_paid.append((name,movement))
-                                energies[name]-=cost
-                                new_life_energy -=cost
+                        if cost +amount*self.bio_packet_size < new_energies[name]:
+                                movements_paid.append((name,amount))
+                                new_energies[name]-=cost
                 for movement in movements_paid:
                         name = movement[0]
                         positions[name]+=movement[1]
@@ -271,27 +295,30 @@ class World(object):
                 name = self.create_agent_name()
                 pos = random.choice(range(self.size))
                 parent.behavior.genome.reproductions+=1
-                child = agents.Agent(name,pos,parent.behavior.genome.mutate(self.life_conditions,self.temperature),reproduction_energy)
+                child = Agent(name,pos,parent.behavior.genome.mutate(self.life_conditions,self.temperature),reproduction_energy)
                 child.behavior.genome.living_instantiations+=1
                 child.behavior.genome.instantiations+=1
                 if child.behavior.genome == parent.behavior.genome:
                         parent.behavior.genome.living_instantiations+=1
                         parent.behavior.genome.instantiations+=1
+                else:
+                        self.genomes.append(child.behavior.genome)
 
         def kill(self, agent):
                 self.agent_names.remove(agent.name)
+                self.agents.remove(agent)
                 agent.behavior.genome.living_instantiations-=1
                 #agent.genome
                 #TODO
                 #somehow take into account the death in the fitness of its genome
                 #maybe record
         #done
-        def death(agent,new_energy):
+        def death(self,agent,new_energy):
                 if new_energy < 0:
                         agent.danger+=1
                 else:
                         agent.danger = 0
-                if danger == self.grace_period:
+                if agent.danger == self.life_conditions["grace period"]:
                         return True
                 else:
                         return False
@@ -305,8 +332,8 @@ class World(object):
 
 
 def find(name,list_of_pairs):
-        for pair in pairs:
+        for pair in list_of_pairs:
                 if pair[0]==name:
-                        return pairs.index(pair)
-                else:
-                        return None
+                        return list_of_pairs.index(pair)
+                #else:
+                        #return None

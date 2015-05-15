@@ -1,29 +1,32 @@
 #done for now
-import genome.py
+from genetics import *
+
 class Behavior(object):
         def __init__(self,genome):
                 self.separators = genome.separators
                 self.vision = genome.vision
                 self.memory = genome.memory
-                self.actions = genome.actions
+                self.responses = genome.responses
                 self.heuristics = genome.heuristics
                 #place keeps track of the last heuristic action performed
                 self.place = 0
                 self.h_length = len(heuristics)
                 self.genome = genome
 
-        #take some knowledge and return an action tuple based on behavior table
+        #take some knowledge and return an response tuple based on behavior table
         #  knowledge is a (vision x memory)-matrix filled in with all avaliable information about energy levels
         def respond(self,knowledge):
-                #Approach 1: keep lookup table ordered (decreasing) by complexity of action
+                #Approach 1: keep lookup table ordered (decreasing) by complexity of response
                 #Approach 2: randomly permute as part of mutations (going with this for now)
                 #go with the first match to the knowledge
-                for action in self.actions:
-                        scenario = action[0]
+                #if there is no match resort to heuristics
+                for resp in self.responses:
+                        scenario = resp[0]
                         if matches(scenario,knowledge):
-                                return action[1]
-                return heuristics[self.place]
+                                return resp[1]
+                response = heuristics[self.place]
                 self.place += 1 % self.hlength
+                return response
 
 
         #boolean function taking a scenario and determining whether or not it matches reality determined by knowledge
@@ -39,9 +42,11 @@ class Behavior(object):
                 return match
 
         #finds the energy level of a given cell based on the separators of the agent
+        #done
         def level(self,energy):
                 seps = self.separators
-                lev = -1 #default for unknown
+                #lev = -1 #default for unknown
+                lev=0
                 for sep in seps:
                         if sep <= energy:
                                 lev += 1

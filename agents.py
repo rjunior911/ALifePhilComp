@@ -1,4 +1,4 @@
-import behavior.py
+from behavior import *
 import random
 import string
 class Agent(object):
@@ -39,11 +39,12 @@ class Agent(object):
         self.knowledge = knowledge
         self.age = 0
         self.name = name
+        self.danger = 0
 
 
 
+    #returns a tuple of coordinate-energies and an agent-action 4-tuple
     def act(self):
-
         action = self.behavior.respond(self.knowledge)
         self.age += 1
         return action
@@ -52,12 +53,16 @@ class Agent(object):
             #return None
 
     def react(self,fate):
-        if fate[0]!=0:
-            energy_gained = fate[1]
-            movement = fate[2]
+            new_energy = fate[0]
+            movement = fate[1]
             self.position += movement
-            self.energy += energy_gained
+            self.energy = new_energy
             #self.observe()
+    #done
+    def observe(self,data):
+        knowledge.prepend(data.insert(vision,self.energy))
+        if len(self.knowledge) > self.memory:
+            self.knowledge.pop()
 
     #the world determines the allocation of energy, the resulting positions and the life or death of each agent.
     #a fate tuple consists of

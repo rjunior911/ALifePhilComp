@@ -27,7 +27,7 @@ class Genome(object):
                         self.separators = separators
                 if responses==None:
                         num_responses = int(random.betavariate(2,1))-1
-                        for i in range(num_responses)
+                        for i in range(num_responses):
                                 num_coordinates = int(random.betavariate(2,1))-1
                                 coords = tuple(random_configuration(vision,memory,separators) for i in range(num_coordinates))
                                 agent_action = random_action()
@@ -39,7 +39,7 @@ class Genome(object):
                 if heuristics==None:
                         self.heuristics=[]
                         num_heuristics = int(random.betavariate(2,1))-1
-                        for i in range(num_heuristics)
+                        for i in range(num_heuristics):
                                 agent_action = random_action()
                                 self.heuristics.append(agent_action)
                 else:
@@ -200,7 +200,7 @@ class Genome(object):
                 attack = int(1/random.beta(2,1))-1
                 move = int(random.gauss(0,2))
                 return (absorb,defend,attack,move)
-        def random_configuration(vision,memory,separators)
+        def random_configuration(vision,memory,separators):
             pos = random.randint(-vision,vision+1)
             mem = random.randint(0,memory)
             level = random.randint(0,separators)

@@ -1,5 +1,5 @@
 import sys
-import world.py
+from world import *
 def main(argv=sys.argv):
 
         #stuff for visualization purposes
@@ -40,6 +40,7 @@ def main(argv=sys.argv):
         absorption_cost = 1
         defense_cost = 1
         attack_cost = 1
+        packet_size = 10
 
         #steps to spawn new life
         reproduction_age = 5
@@ -82,10 +83,11 @@ def main(argv=sys.argv):
                         "grace period":grace_period, #time allotted to remain below required energy level before death
                         "absorption cost":absorption_cost,
                         "defense cost":defense_cost,
-                        "attack cost":attack_cost
+                        "attack cost":attack_cost,
+                        "packet size":packet_size
                         }
         physics = {"world size":world_size,
-                    "end of time ":end_of_time,
+                    "end of time":end_of_time,
                     "sunshine":sunshine,
                     "energy packet":energy_packet,
                     "friction":friction,

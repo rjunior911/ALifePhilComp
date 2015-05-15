@@ -10,6 +10,7 @@ class Behavior(object):
                 #place keeps track of the last heuristic action performed
                 self.place = 0
                 self.h_length = len(heuristics)
+                self.genome = genome
 
         #take some knowledge and return an action tuple based on behavior table
         #  knowledge is a (vision x memory)-matrix filled in with all avaliable information about energy levels

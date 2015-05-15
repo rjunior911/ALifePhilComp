@@ -1,5 +1,6 @@
+import sys
 import world.py
-def main():
+def main(argv=sys.argv):
 
         #stuff for visualization purposes
         world_file = "world.txt"
@@ -35,46 +36,71 @@ def main():
         existence_cost = 1
 
         #a tax on complexity of organisms so that random purposeless behavior is not rewarded
-        complexity_cost = .05
+        complexity_cost = 1
+        absorption_cost = 1
+        defense_cost = 1
+        attack_cost = 1
 
         #steps to spawn new life
-        reproduction_rate = 10
+        reproduction_age = 5
+        reproduction_energy = 50
+        reproduction_likelihood = .3
 
-        #initial rate of mutation which is decreased for each mutation correspondingly; 
-        #also decreased according to temperature
         mutation_rate = .25
+        response_permutation_rate = 0.05
+        response_insertion_rate= .05
+        response_deletion_rate = .1
+        heuristics_deletion_rate = .1
+        heuristics_insertion_rate =.1
+        vision_mutation_rate = .02
+        memory_mutation_rate = .02
 
         #steps allowed to gain energy required to stay alive
         grace_period = 10
 
+        life_conditions = {
+                        "response permutation rate":response_permutation_rate,
+                        "response insertion rate":response_insertion_rate,
+                        "response deletion rate":response_deletion_rate,
+                        "heuristics deletion rate": heuristics_deletion_rate,
+                        "heuristics insertion rate":heuristics_insertion_rate,
+                        "vision mutation rate":vision_mutation_rate,
+                        "memory mutation rate":memory_mutation_rate,
+                        "initial population": initial_population,
+                        "initial biodiversity": initial_biodiversity,
+                        "max agents":max_agents,
+                        "max diversity": max_diversity,
+                        "max memory":max_memory,
+                        "max vision":max_vision,
+                        "max separators":max_separators,
+                        "existence cost":existence_cost,
+                        "complexity cost":complexity_cost,
+                        "reproduction age":reproduction_age,
+                        "reproduction energy":reproduction_energy,
+                        "reproduction likelihood":reproduction_likelihood,
+                        "mutation rate":mutation_rate, 
+                        "grace period":grace_period, #time allotted to remain below required energy level before death
+                        "absorption cost":absorption_cost,
+                        "defense cost":defense_cost,
+                        "attack cost":attack_cost
+                        }
         physics = {"world size":world_size,
                     "end of time ":end_of_time,
                     "sunshine":sunshine,
                     "energy packet":energy_packet,
                     "friction":friction,
-                    "initial population": initial_population,
-                    "initial biodiversity": initial_biodiversity,
-                    "max agents":max_agents,
-                    "max diversity": max_diversity,
-                    "initial temp":initial_temp,
-                    "max memory":max_memory,
-                    "max vision":max_vision,
-                    "max separators":max_separators,
-                    "existence cost":existence_cost,
-                    "complexity cost":complexity_cost,
-                    "reproduction rate":reproduction_rate,
-                    "mutation rate":mutation_rate,
-                    "grace period":grace_period
+                    "initial temp":initial_temp
                     }
 
-        world = World(physics)
+        world = World(physics,life_conditions)
         while world.time != end_of_time:
                 world.update()
                 if (world.time % 100) == 0:
-                        agents_buffer.write('at time '+ str(world.time)+' the fittest genomes were:\n')
+                        genomes_buffer.write('at time '+ str(world.time)+' the fittest genomes were:\n')
                         for i in range(10):
-                                agents_buffer.write(world.fittest)
-                        agents_buffer.write('\n')
+                                genomes_buffer.write(world.fittest[i].name)
+                        genomes_buffer.write('\n')
                 world_buffer.write(world.show())
-        #not sure if this is the correct way to ensure world destruction...mwahahaha
-        #world.del()
+        
+if __name__ == "__main__": main()
+

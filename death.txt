@@ -1,0 +1,2 @@
+agents are in danger if they go below zero energy
+if an agent remains in danger past the amount of time allowed by the grace period, then it dies

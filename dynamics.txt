@@ -1,0 +1,60 @@
+Simplified versions:
+important values:
+    background energy   - from non-living sources
+                        - can be absorbed
+    life energy         -can be stolen/defended
+    costs of absorption/defense/attack
+    energy packet size  -the size of a chunk of energy which a given organism can absorb/steal/defend
+                        -this will (in a later iteration) depend on an organism's complexity
+    costs of existence/complexity   -which are taxes paid by living agents every timestep
+
+at every timestep the following happens:
+    every agent's knowledge is updated (see knowledge.txt)
+    energy allocation:
+        first we decide how much background energy each agent absorbs
+            -those who invest more are more likely to get what they wanted
+        then we decide how much life energy is reserved by those who defend themselves
+        the remaining life energy goes into a pot which is then taken from
+            -those who attack more are more likely to get the amount they wanted
+
+    movement is calculated after all of the above, and it costs more to move for those with more energy
+    then the world decides who is still living as described in death.txt
+    of the living, those who are able to reproduce (see reproduction.txt) are considered
+    the above repeats until the end of time (in the digital world)
+
+More Detailed Description (for Joseph's eyes):
+energy allocation:
+	relevant physical constants:
+		cost of being
+		cost of absorption
+		cost of attack
+		cost of defense
+	each organism has a set packet size determined by its cost of being, for simplicity these are equal
+	the energy in a square consists of the available background energy and the cumulative life energy
+	the overall cost of each action is the investment multiplied by the associated physical constant
+	each action is only performed if the agent can afford it
+		absorbtion:
+			sort in decreasing order of packets attempted the agents and address each request in turn
+				if a request cannot be met, it is skipped	
+				otherwise, it is met by allocating background energy as requested
+		defense:
+			after absorption
+			do not include the defended packets in the life energy during the attack phase
+		attack:
+			after absorption and defense
+			take the amount of life energy TLE
+			rank by aggressiveness, assign life energy to the most aggressive until there is no more
+			THIS IS A CENTRAL PIECE OF THE MODEL AND MUST BE DEBATED AND REVISED AS SUCH
+			
+motion calculation:
+	relevant physical constants:
+		friction
+	after energy allocation
+	friction assigns a cost of motion based on the amount of energy one has (mass) this cost of motion is multiplied by the amount of spaces one attempts to move, if the agent cannot afford it, motion does not take place but not all energy is expended
+		friction then determines a penalty for ineffective motion. for now, this is zero
+		
+	
+	after absorbtion/attack/defense/motion assignment takes place, Death selects those who have not met their quota and marks them
+		 costs of being are subtracted from each entity which remains alive
+		cost of action is subtracted from each
+		motion is enacted for living entities

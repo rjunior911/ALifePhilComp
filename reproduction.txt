@@ -1,0 +1,20 @@
+agents reproduce at a certain age IF they have enough energy
+perhaps in a later iteration have this age/energy requirement depend on complexity
+
+sexual reproduction (perhaps in a later iteration)
+
+
+agents are born with the amount of energy required to reproduce
+agents are born into a random position unrelated to their parent
+mutation occurs accorgin to the mutation rates:
+        "mutation rate" -chance of mutation happening
+        "response permutation rate"
+        "response insertion rate"
+        "response deletion rate"
+        "heuristics deletion rate"
+        "heuristics insertion rate"
+        "vision mutation rate"
+        "memory mutation rate"
+...
+
+

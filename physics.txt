@@ -1,0 +1,35 @@
+energy allocation:
+	relevant physical constants:
+		cost of being
+		cost of absorption
+		cost of attack
+		cost of defense
+	each organism has a set packet size determined by its cost of being, for simplicity these are equal
+	the energy in a square consists of the available background energy and the cumulative life energy
+	the overall cost of each action is the investment multiplied by the associated physical constant
+	each action is only performed if the agent can afford it
+		absorbtion:
+			sort in decreasing order of packets attempted the agents and address each request in turn
+				if a request cannot be met, it is skipped	
+				otherwise, it is met by allocating background energy as requested
+		defense:
+			after absorption
+			do not include the defended packets in the life energy during the attack phase
+		attack:
+			after absorption and defense
+			take the amount of life energy TLE
+			rank by aggressiveness, assign life energy to the most aggressive until there is no more
+			THIS IS A CENTRAL PIECE OF THE MODEL AND MUST BE DEBATED AND REVISED AS SUCH
+			
+motion calculation:
+	relevant physical constants:
+		friction
+	after energy allocation
+	friction assigns a cost of motion based on the amount of energy one has (mass) this cost of motion is multiplied by the amount of spaces one attempts to move, if the agent cannot afford it, motion does not take place but not all energy is expended
+		friction then determines a penalty for ineffective motion. for now, this is zero
+		
+	
+	after absorbtion/attack/defense/motion assignment takes place, Death selects those who have not met their quota and marks them
+		 costs of being are subtracted from each entity which remains alive
+		cost of action is subtracted from each
+		motion is enacted for living entities

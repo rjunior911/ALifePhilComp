@@ -1,3 +1,4 @@
+import pdb
 import sys
 from world import *
 def main(argv=sys.argv):
@@ -11,14 +12,14 @@ def main(argv=sys.argv):
         genomes_buffer = open(genomes_file,'w')
 
         #planetary conditions
-        world_size = 5
-        end_of_time = 10000
+        world_size = 3
+        end_of_time = 5000
 
         #energy fed into the system at each time step (dispersed randomly)
-        sunshine = 500
+        sunshine = 200
 
         #size of sunlight chunks dispersed
-        energy_packet=5
+        energy_packet=10
 
         #proportionally increases cost of movement with how much energy one has
         friction = 1
@@ -42,10 +43,10 @@ def main(argv=sys.argv):
         absorption_cost = 1
         defense_cost = 1
         attack_cost = 1
-        packet_size = 10
+        packet_size = 50
 
         #steps to spawn new life
-        reproduction_age = 5
+        reproduction_age = 50
         reproduction_energy = 20
         reproduction_likelihood = .5
 

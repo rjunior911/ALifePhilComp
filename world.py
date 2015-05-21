@@ -89,6 +89,7 @@ class World(object):
                 self.sort_fitness()
                 self.sort_complexity()
                 self.extinction()
+                pdb.set_trace()
                 
 
         #DONE 

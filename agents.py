@@ -25,10 +25,10 @@ class Agent(object):
                     #move left or right n steps; cost of movement proportional to energy stored
                     #defend with n (later versions)
                     #spend n to absorb:
-                        
+
                     #attack with n (later versions)
         #a sequence of heuristic actions to take in the event that action is not determined by knowledge
-    def __init__(self,name,position,genome=Genome(),energy=0,knowledge=[]):
+    def __init__(self,name,position,genome=Genome(),energy=50,knowledge=[]):
         #At the moment the behavior class is a needless composition but perhaps later it will leave room for gene expression
         self.behavior = Behavior(genome)
         genome.instantiations +=1
@@ -39,6 +39,7 @@ class Agent(object):
         self.age = 0
         self.name = name
         self.danger = 0
+        self.generation = genome.generation
 
 
 
@@ -56,12 +57,25 @@ class Agent(object):
             movement = fate[1]
             self.position += movement
             self.energy = new_energy
-            #self.observe()
     #done
     def observe(self,data):
-        self.knowledge=[data.insert(self.behavior.vision,self.energy)]+ self.knowledge 
+        self.knowledge=[data.insert(self.behavior.vision,self.energy)]+ self.knowledge
         if len(self.knowledge) > self.behavior.memory:
             self.knowledge.pop()
+
+    def show(self):
+        #TODO This may have to return instead of print
+        print "Name:\t"+self.name
+        print "Age at death:\t"+str(self.age)
+        print "Generation:"+str(self.generation)
+        print "Vis, Mem:\t"+str(self.behavior.vision)+"\t"+str(self.behavior.memory)
+        print "Separators:\t"+"\t".join(map(str,self.behavior.separators))
+        print "Heuristics:"
+        for heuristic in self.behavior.heuristics:
+            print str(heuristic)
+        print "Responses:"
+        for response in self.behavior.responses:
+            print str(response)
 
     #the world determines the allocation of energy, the resulting positions and the life or death of each agent.
     #a fate tuple consists of

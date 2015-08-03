@@ -10,7 +10,7 @@ class Behavior(object):
                 self.heuristics = genome.heuristics
                 #place keeps track of the last heuristic action performed
                 self.place = 0
-                self.h_length = len(self.heuristics)
+                #self.h_length = len(self.heuristics)
                 self.genome = genome
 
         #take some knowledge and return an response tuple based on behavior table
@@ -24,25 +24,11 @@ class Behavior(object):
                         scenario = resp[0]
                         if matches(scenario,knowledge):
                                 return resp[1]
-                #print(self.heuristics)
-                #print(self.place)
+                self.place %= len(self.heuristics)
+                assert self.place<len(self.heuristics), str(self.heuristics)+"\t"+str(self.place)+"\t"+str(len(self.heuristics))
                 response = self.heuristics[self.place]
-                self.place += 1 
-                self.place %= self.h_length
+                self.place += 1
                 return response
-
-
-        #boolean function taking a scenario and determining whether or not it matches reality determined by knowledge
-        #  where scenario is some list of coordinates and energy levels and knowledge is the matrix containing the real info
-        def matches(scenario,knowledge):
-                match = True
-                #coordinates is a list (relative position, time in past, energy level) where a 0 time in the past is the current
-                for coordinates in scenario:
-                        anticipated_level= level(coordinates[2])
-                        actual_level = level(knowledge[coordinates[0],coordinates[1]])
-                        if anticipated_level != actual_level:
-                                match = False
-                return match
 
         #finds the energy level of a given cell based on the separators of the agent
         #done
@@ -54,3 +40,16 @@ class Behavior(object):
                         if sep <= energy:
                                 lev += 1
                 return lev
+
+        #boolean function taking a scenario and determining whether or not it matches reality determined by knowledge
+        #  where scenario is some list of coordinates and energy levels and knowledge is the matrix containing the real info
+def matches(scenario,knowledge):
+        match = True
+        #coordinates is a list (relative position, time in past, energy level) where a 0 time in the past is the current
+        for coordinates in scenario:
+                anticipated_level= level(coordinates[2])
+                actual_level = level(knowledge[coordinates[0],coordinates[1]])
+                if anticipated_level != actual_level:
+                        match = False
+        return match
+

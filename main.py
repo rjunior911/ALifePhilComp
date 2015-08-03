@@ -1,6 +1,16 @@
 import sys
 from world import *
+
+#TODO MAJOR Problems:
+    #there is broken heredity for some reason
+
 def main(argv=sys.argv):
+
+        #TODO allow for continuation of previous worlds by file input
+        #world_input = argv[0]
+        #agents_input = argv[1]
+        #genomes_input = argv[2]
+
 
         #stuff for visualization purposes
         world_file = "world.txt"
@@ -12,10 +22,10 @@ def main(argv=sys.argv):
 
         #planetary conditions
         world_size = 5
-        end_of_time = 10000
+        end_of_time = 1000
 
         #energy fed into the system at each time step (dispersed randomly)
-        sunshine = 500
+        sunshine = 300
 
         #size of sunlight chunks dispersed
         energy_packet=5
@@ -25,20 +35,21 @@ def main(argv=sys.argv):
 
         #life restrictions
         initial_biodiversity = 20
-        max_diversity = 100#not actually used here
-        initial_population =10 
-        max_agents= 2000#not actually used here
+        initial_population =10
+        max_diversity = 100 #not actually used here
+        max_agents= 2000 #not actually used here
+
         #individual life restrictions
         initial_temp= 1
-        max_memory = 10 #not actually used here
-        max_vision = 10#not actually used here
-        max_separators = 3#not actually used here
+        max_memory = 10
+        max_vision = 10
+        max_separators = 3
 
         #in units of energy per timestep
-        existence_cost = 5
+        existence_cost = 50
 
         #a tax on complexity of organisms so that random purposeless behavior is not rewarded
-        complexity_cost = 1
+        complexity_cost = 10
         absorption_cost = 1
         defense_cost = 1
         attack_cost = 1
@@ -46,31 +57,42 @@ def main(argv=sys.argv):
 
         #steps to spawn new life
         reproduction_age = 5
-        reproduction_energy = 20
+        reproduction_energy = 5
         reproduction_likelihood = .5
 
         mutation_rate = .25
         response_permutation_rate = 0.05
         response_insertion_rate= .05
         response_deletion_rate = .1
-        heuristics_deletion_rate = .1
-        heuristics_insertion_rate =.1
+        response_replacement_rate =.1
+        heuristic_deletion_rate = .1
+        heuristic_insertion_rate =.1
+        heuristic_permutation_rate =.1
+        heuristic_replacement_rate =.1
+        separator_deletion_rate = .1
+        separator_insertion_rate =.1
         vision_mutation_rate = .02
         memory_mutation_rate = .02
 
         #steps allowed to gain energy required to stay alive
-        grace_period = 10
+        grace_period = 3
 
         life_conditions = {
                         "response permutation rate":response_permutation_rate,
                         "response insertion rate":response_insertion_rate,
                         "response deletion rate":response_deletion_rate,
-                        "heuristics deletion rate": heuristics_deletion_rate,
-                        "heuristics insertion rate":heuristics_insertion_rate,
+                        "response replacement rate":response_replacement_rate,
+                        "heuristic deletion rate": heuristic_deletion_rate,
+                        "heuristic insertion rate":heuristic_insertion_rate,
+                        "heuristic permutation rate":heuristic_permutation_rate,
+                        "heuristic replacement rate":heuristic_replacement_rate,
+                        "separator deletion rate": separator_deletion_rate,
+                        "separator insertion rate":separator_insertion_rate,
                         "vision mutation rate":vision_mutation_rate,
                         "memory mutation rate":memory_mutation_rate,
                         "initial population": initial_population,
                         "initial biodiversity": initial_biodiversity,
+                        "initial temp":initial_temp,
                         "max agents":max_agents,
                         "max diversity": max_diversity,
                         "max memory":max_memory,
@@ -81,30 +103,33 @@ def main(argv=sys.argv):
                         "reproduction age":reproduction_age,
                         "reproduction energy":reproduction_energy,
                         "reproduction likelihood":reproduction_likelihood,
-                        "mutation rate":mutation_rate, 
+                        "mutation rate":mutation_rate,
                         "grace period":grace_period, #time allotted to remain below required energy level before death
                         "absorption cost":absorption_cost,
                         "defense cost":defense_cost,
                         "attack cost":attack_cost,
-                        "packet size":packet_size
+                        "packet size":packet_size,
+                        "temperature":initial_temp
                         }
         physics = {"world size":world_size,
                     "end of time":end_of_time,
                     "sunshine":sunshine,
                     "energy packet":energy_packet,
-                    "friction":friction,
-                    "initial temp":initial_temp
+                    "friction":friction
                     }
 
         world = World(physics,life_conditions)
         while world.time != end_of_time:
                 world.update()
                 if (world.time % 100) == 0:
-                        genomes_buffer.write('at time '+ str(world.time)+' the fittest genomes were:\n')
-                        for i in range(min(10,len(world.genomes))):
-                                genomes_buffer.write(str(world.fittest[i])+'\n')
-                        genomes_buffer.write('\n')
-                world_buffer.write(world.show())
-        
+                    genomes_buffer.write('at time '+ str(world.time)+' the fittest genomes were:\n')
+                    for i in range(min(10,len(world.genomes))):
+                            genomes_buffer.write(str(world.fittest[i])+'\n')
+                    genomes_buffer.write('\n')
+                world_buffer.write(world.show_state())
+        #pdb.set_trace()
+        world.doom()
+        #world.show_best()
+
 if __name__ == "__main__": main()
 

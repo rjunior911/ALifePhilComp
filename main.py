@@ -1,3 +1,4 @@
+import pdb
 import sys
 from world import *
 
@@ -28,7 +29,7 @@ def main(argv=sys.argv):
         sunshine = 300
 
         #size of sunlight chunks dispersed
-        energy_packet=5
+        energy_packet=10
 
         #proportionally increases cost of movement with how much energy one has
         friction = 1
@@ -53,7 +54,7 @@ def main(argv=sys.argv):
         absorption_cost = 1
         defense_cost = 1
         attack_cost = 1
-        packet_size = 10
+        packet_size = 50
 
         #steps to spawn new life
         reproduction_age = 5

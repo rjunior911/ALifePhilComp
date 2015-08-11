@@ -1,4 +1,4 @@
-#done for now
+import pdb
 from genetics import *
 
 class Behavior(object):

@@ -1,0 +1,13 @@
+an agent-action is a 4-tuple with 
+  1) the absorption investment
+  2) the defense investment
+  3) the attack investment
+  4) the motion investment
+	0 for none
+	-n for n to the left
+	n for n to the right
+the actual amount of energy absorbed and motion afforded is determined by the World object as described in dynamics.txt
+
+an action is a 4-tuple consisting of the agent's name, position, and energy, along with the agent-action 4-tuple
+
+a response is a tuple of coordinates and energy levels followed by an action to perform in the event that all coordinates in reality have the correct energy level

@@ -1,0 +1,6 @@
+the encoding of the heuristic is as a list of actions
+  NOTE: THERE IS ALWAYS AT LEAST ONE ACTION IN A HEURISTIC!!!
+each action is of the standard form given in actions.txt
+
+
+

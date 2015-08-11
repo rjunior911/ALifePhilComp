@@ -1,0 +1,8 @@
+at each step an agent has an action it would like to take, then the world determines, based on competition and whether the agent has enough energy for the action, what the actual fate of the agent is
+A fate consists of a tuple containing
+	1) alive or dead
+	2) the energy change
+	3) the relative motion
+its calculation is described in dynamics.txt
+
+fates is a dictionary consisting of keys which are the names of the agents, and values which are their fate

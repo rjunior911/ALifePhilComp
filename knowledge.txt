@@ -1,0 +1,8 @@
+an organism's knowledge is a matrix with (memory) number of rows and (2*vision+1) columns
+    there is a special column for the organism to know how much energy it has 
+    the rest tell it how much its surrounding cells in either direction have
+    the number in each entry is not the axact energy given by the world but the energy level
+        -energy levels are distinguished from one another by separators, which an organism can evolve to have more or less of
+    if an organism moves, unknown cells in its memory remain unknown
+
+knowledge is upated by the agent.observe function at every timestep until an agent dies

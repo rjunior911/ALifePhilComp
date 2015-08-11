@@ -1,0 +1,1 @@
+the fitness of a genome is the number of reproductions for organisms with that genome divided by the total number of orgranisms ever having that genome

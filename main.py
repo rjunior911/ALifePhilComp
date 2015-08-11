@@ -21,7 +21,7 @@ def main(argv=sys.argv):
         genomes_buffer = open(genomes_file,'w')
 
         #planetary conditions
-        world_size = 5
+        world_size = 3
         end_of_time = 1000
 
         #energy fed into the system at each time step (dispersed randomly)
@@ -62,7 +62,7 @@ def main(argv=sys.argv):
 
         mutation_rate = .25
         response_permutation_rate = 0.05
-        response_insertion_rate= .05
+        response_insertion_rate= 1
         response_deletion_rate = .1
         response_replacement_rate =.1
         heuristic_deletion_rate = .1
@@ -71,10 +71,11 @@ def main(argv=sys.argv):
         heuristic_replacement_rate =.1
         separator_deletion_rate = .1
         separator_insertion_rate =.1
+        separator_replacement_rate =.1
         vision_mutation_rate = .02
         memory_mutation_rate = .02
 
-        #steps allowed to gain energy required to stay alive
+        #time steps allowed to gain the energy required to stay alive
         grace_period = 3
 
         life_conditions = {
@@ -88,6 +89,7 @@ def main(argv=sys.argv):
                         "heuristic replacement rate":heuristic_replacement_rate,
                         "separator deletion rate": separator_deletion_rate,
                         "separator insertion rate":separator_insertion_rate,
+                        "separator replacement rate":separator_replacement_rate,
                         "vision mutation rate":vision_mutation_rate,
                         "memory mutation rate":memory_mutation_rate,
                         "initial population": initial_population,
@@ -121,15 +123,15 @@ def main(argv=sys.argv):
         world = World(physics,life_conditions)
         while world.time != end_of_time:
                 world.update()
+                print world.time
                 if (world.time % 100) == 0:
                     genomes_buffer.write('at time '+ str(world.time)+' the fittest genomes were:\n')
                     for i in range(min(10,len(world.genomes))):
-                            genomes_buffer.write(str(world.fittest[i])+'\n')
+                            genomes_buffer.write(world.fittest[i].show())
                     genomes_buffer.write('\n')
                 world_buffer.write(world.show_state())
         #pdb.set_trace()
-        world.doom()
         #world.show_best()
+        world.doom()
 
 if __name__ == "__main__": main()
-

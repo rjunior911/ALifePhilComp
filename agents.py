@@ -28,7 +28,7 @@ class Agent(object):
 
                     #attack with n (later versions)
         #a sequence of heuristic actions to take in the event that action is not determined by knowledge
-    def __init__(self,name,position,genome=Genome(),energy=50,knowledge=[]):
+    def __init__(self,name,position,genome=Genome(),energy=0,knowledge=[]):
         #At the moment the behavior class is a needless composition but perhaps later it will leave room for gene expression
         self.behavior = Behavior(genome)
         genome.instantiations +=1
@@ -49,9 +49,6 @@ class Agent(object):
         self.age += 1
         return action
 
-        #else:
-            #return None
-
     def react(self,fate):
             new_energy = fate[0]
             movement = fate[1]
@@ -59,9 +56,18 @@ class Agent(object):
             self.energy = new_energy
     #done
     def observe(self,data):
-        self.knowledge=[data.insert(self.behavior.vision,self.energy)]+ self.knowledge
-        if len(self.knowledge) > self.behavior.memory:
+        if self.behavior.memory != 0 and self.behavior.vision !=0:
+            self.knowledge=[data[:self.behavior.vision]+[self.energy]+data[self.behavior.vision:]]+ self.knowledge
+        elif self.behavior.memory != 0:
+            self.knowledge=[[self.energy]]+self.knowledge
+        else:
+            self.knowledge=[]
+        while len(self.knowledge) > self.behavior.memory:
             self.knowledge.pop()
+        while len(self.knowledge) < self.behavior.memory:
+            #TODO Figure out how to encode unknown information without compromising the knowledge structure
+            #Til then, simply fill it in with enough zeroes to not have to worry about i t
+            self.knowledge.append([0 for i in range(self.behavior.vision*2+1)])
 
     def show(self):
         #TODO This may have to return instead of print

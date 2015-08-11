@@ -8,6 +8,8 @@ class World(object):
     #TODO figure out why all initial lifeforms have the same genomes:
         #also why do all of the fittest end up with the same behavior but different genomes somehow?
         #also why is the total energy growing faster than what the sun allows?
+            #does the cost of action being subtracted account for the weird numbers?
+            #is the birth of agents contributing to the extra energy?
         def __init__(self,physics,life_conditions):
                 self.time=0
                 self.life_conditions=life_conditions
@@ -91,9 +93,9 @@ class World(object):
                 #update agents according to the results of all responses
                 for agent in self.agents:
                         living = self.death(agent,fates[agent.name][0])
-                        self.state[agent.position]+= agent.energy
                         agent.react(fates[agent.name])
                         agent.position%=self.size
+                        self.state[agent.position]+= agent.energy
                         if not living:
                                 #TODO check for a solution to the total energy problem here
                                 self.kill(agent)
@@ -109,22 +111,25 @@ class World(object):
                 agents = []
                 for i in range(num_agents):
                         position = random.randrange(self.size)
-                        name = self.create_agent_name()
+                        agent_name = self.create_agent_name()
+                        genome_name = self.create_genome_name()
                         genome=Genome()
-                        #HERE
-                        knowledge= self.relevant_data(position,genome.vision)
-                        a = Agent(name,position,genome,self.reproduction_energy,knowledge)
+                        #knowledge= [self.relevant_data(position,genome.vision)]
+                        #a = Agent(agent_name,position,genome,self.reproduction_energy,knowledge)
+                        a = Agent(agent_name,position,genome,self.reproduction_energy)
+                        a.observe(self.relevant_data(position,genome.vision))
                         agents.append(a)
-                        self.genomes.append(a.behavior.genome)
-                        a.behavior.genome.instantiations = 1
-                        a.behavior.genome.living_instantiations = 1
+                        self.agent_names.append(agent_name)
+                        self.genome_names.append(genome_name)
+                        self.genomes.append(genome)
+                        genome.instantiations = 1
+                        genome.living_instantiations = 1
                 return agents
 
         #TODO THIS WHOLE ROUTINE MAY BE UNNECESSARY:
             #that is unless we want to allow for uninstantiated genome pools which may be instantiated when we reseed
             #population, and make it preferential toward more fit genes to select for robustness
         def seed_genomes(self,num_genomes):
-                #create 10 new genomes
                 genomes = []
                 for i in range(num_genomes):
                         g = Genome()
@@ -151,7 +156,6 @@ class World(object):
                 if genomes < self.life_conditions["initial biodiversity"]:
                         genomes_needed = self.life_conditions["initial biodiversity"]-genomes
                         #self.genomes += self.seed_genomes(genomes_needed)
-                        print "Seeding Genomes"
                         self.seed_agents(genomes_needed)
                 if lives < self.life_conditions["initial population"]:
                         agents_needed = self.life_conditions["initial population"]-lives
@@ -225,8 +229,6 @@ class World(object):
                 left = position - vision
                 width = 2*vision
                 size = self.size
-                #if vision > 1:
-                    #pdb.set_trace()
                 if width >=size:
                         return self.state
                 else:
@@ -237,6 +239,7 @@ class World(object):
                                 return self.state[left:]+self.state[:r]
                         else:
                                 return self.state[left:right]
+                #pdb.set_trace()
 
 
         #DONE
@@ -248,7 +251,8 @@ class World(object):
                 self.agent_names.append(name)
                 return name
         def create_genome_name(self):
-                #use a random string
+                #For now this works exactly as the agent name creater
+                #It may be useful to change this later
                 name = "".join(random.choice(string.ascii_letters + string.digits) for i in range(6))
                 while name in self.genome_names:
                         name = "".join(random.choice(string.ascii_letters + string.digits) for i in range(6))
@@ -334,7 +338,11 @@ class World(object):
                 position = random.choice(range(self.size))
                 parent_genome.reproductions+=1
                 child_genome=parent_genome.mutate(self.life_conditions)
-                child = Agent(name, position, child_genome, self.reproduction_energy)
+                if child_genome.memory > 0:
+                    knowledge = [self.relevant_data(child_genome.vision,child_genome.memory)]
+                    child = Agent(name, position, child_genome, self.reproduction_energy,knowledge)
+                else:
+                    child = Agent(name, position, child_genome, self.reproduction_energy,[])
                 self.agents.append(child)
                 self.agent_names.append(name)
                 if child_genome != parent_genome:
